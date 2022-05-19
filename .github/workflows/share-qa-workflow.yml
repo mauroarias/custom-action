@@ -17,19 +17,18 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest    
     steps:
-      # getting source code
-      - uses: actions/checkout@v3
-      # getting itest framework libs
-      - run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
-      # building app
-      - run: docker build -f "${{inputs.service_dockerfile_path}}" -t "${{inputs.service_name}}":test .
-      # prepare itest framework libs
-      - run: |
+      - name: getting source code
+        uses: actions/checkout@v3
+      - name: getting itest framework libs
+        run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
+      - name: building app
+        run: docker build -f "${{inputs.service_dockerfile_path}}" -t "${{inputs.service_name}}":test .
+      - name: prepare itest framework libs
+        run: |
           cp -rf share-libs/scripts/* "${{inputs.service_itest_path}}"/scripts/
           cp -rf share-libs/* "${{inputs.service_itest_path}}"/
-      # run Itest
-      - run: "${{inputs.service_itest_path}}"/scripts/Itest.sh
-      # getting report
+      - name: run Itest
+        run: "${{inputs.service_itest_path}}"/scripts/Itest.sh
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
         with:
