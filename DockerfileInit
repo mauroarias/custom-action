@@ -1,0 +1,7 @@
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y postgresql-client jq curl
+RUN apt-get clean
+COPY "scripts/*" "/scripts/"
+WORKDIR "/"
+CMD ["/scripts/Init.sh"]

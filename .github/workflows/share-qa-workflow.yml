@@ -1,21 +1,43 @@
-name: Service quality CI
+name: QA platform CI
 on:
   workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+      service_dockerfile_path:
+        required: true
+        type: string
+      service_itest_path: 
+        required: true
+        type: string
+      service_version: 
+        type: string
 jobs:
   build-docker:
     runs-on: ubuntu-latest    
     steps:
+      # getting source code
       - uses: actions/checkout@v3
         with:
           path: app
-      - run: ls -als
-      - run: ls -als app/
-      # - run: docker build -t projectpoc:test .
-      #   working-directory: app/ProjectPoc
-      # - run: scripts/Itest.sh
-      #   working-directory: app/IntegrationTest
-      # - name: Publishing Test Report & logs
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: reporting
-      #     path: app/IntegrationTest/reporting
+      # getting itest framework libs
+      - run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
+        working-directory: app
+      # building app
+      - run: docker build -t "${{inputs.service_name}}":test .
+         working-directory: app/"${{inputs.service_dockerfile_path}}"
+      # prepare itest framework libs
+      - run: |
+          cp -rf share-libs/scripts/* "${{inputs.service_itest_path}}"/scripts/
+          cp -rf share-libs/* "${{inputs.service_itest_path}}"/
+        working-directory: app
+      # run Itest
+      - run: scripts/Itest.sh
+        working-directory: app/"${{inputs.service_itest_path}}"
+      # getting report
+      - name: Publishing Test Report & logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: reporting
+          path: app/"${{inputs.service_itest_path}}"/reporting

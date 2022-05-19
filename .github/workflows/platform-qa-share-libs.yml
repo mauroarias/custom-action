@@ -1,0 +1,15 @@
+name: platform QA share libraries
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: app
+      - run: docker build -t share-qa-lib:latest .
+        working-directory: app
+# need to push image

@@ -13,7 +13,10 @@ white=`tput setaf 7`
 gris=`tput setaf 8`
 reset=`tput sgr0`
 
-source scripts/Configuration.sh
+if [ -f "scripts/Configuration.sh" ];
+then
+  source scripts/Configuration.sh
+fi
 
 #-------------------------------------------
 # Common vars
@@ -99,6 +102,8 @@ initMockStubs () {
   mockUri=$1
   if [ -f "scripts/Wiremock.json" ];
   then
+    # watting for mock up
+    waitServerUp "$mockUri/__admin/mappings" "mock" "20"
     # preparing stubs
     printTitleWithColor "cleaning all stubs" "${yellow}"
     curl --silent --fail -X DELETE "$mockUri/__admin/mappings" || exitOnError "error resetting stubs"
@@ -112,7 +117,7 @@ initMockStubs () {
 }
 
 loadPostgresSchema () {
-  if [ -f "scripts/Wiremock.json" ];
+  if [ -f "scripts/Schema.sql" ];
   then
     # loading db schema
     printTitleWithColor "loading db schema" "${yellow}"

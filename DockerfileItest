@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["IntegrationTest.csproj", "Itest/itest.csproj"]
+COPY ["src/test", "Itest/"]
+RUN dotnet restore "Itest/itest.csproj"
+COPY . .
+WORKDIR "/src/Itest"
+RUN dotnet build "itest.csproj" -c Release -o /Itest/build
+
+FROM build AS testrunner
+WORKDIR /Itest
+COPY --from=build /Itest/build .
+RUN mkdir /reporting
+CMD ["dotnet", "test", "itest.dll", "--logger", "html", "--results-directory", "/reporting"]
