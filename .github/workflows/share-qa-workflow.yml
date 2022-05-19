@@ -23,10 +23,10 @@ jobs:
         run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
       - name: building app
         run: docker build -f "${{inputs.service_dockerfile_path}}" -t "${{inputs.service_name}}":test .
-      - name: prepare itest framework libs
-        run: |
-          cp -rf share-libs/scripts/* "${{inputs.service_itest_path}}"/scripts/
-          cp -rf share-libs/* "${{inputs.service_itest_path}}"/
+      - name: prepare itest framework libs copy scripts
+        run: cp -rf share-libs/scripts/* "${{inputs.service_itest_path}}"/scripts/
+      - name: prepare itest framework libs copy dockerfiles
+        run: cp -rf share-libs/* "${{inputs.service_itest_path}}"/
       - name: run Itest
         run: "${{inputs.service_itest_path}}"/scripts/Itest.sh
       - name: Publishing Test Report & logs
