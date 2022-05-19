@@ -1,5 +1,6 @@
 name: Service quality CI
-on: [push]
+on:
+  workflow_call:
 jobs:
   build-docker:
     runs-on: ubuntu-latest    
