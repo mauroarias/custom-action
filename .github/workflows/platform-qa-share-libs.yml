@@ -2,7 +2,7 @@ name: platform QA share libraries
 on:
   push:
     branches:
-      - develop
+      - main
 jobs:
   build-docker:
     runs-on: ubuntu-latest    

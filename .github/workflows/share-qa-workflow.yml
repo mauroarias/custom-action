@@ -25,19 +25,19 @@ jobs:
       - run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
         working-directory: app
       # building app
-      - run: docker build -t "${{inputs.service_name}}":test .
-         working-directory: app/"${{inputs.service_dockerfile_path}}"
+      - run: docker build -f "${{inputs.service_dockerfile_path}}" -t "${{inputs.service_name}}":test .
+         working-directory: app
       # prepare itest framework libs
       - run: |
           cp -rf share-libs/scripts/* "${{inputs.service_itest_path}}"/scripts/
           cp -rf share-libs/* "${{inputs.service_itest_path}}"/
         working-directory: app
       # run Itest
-      - run: scripts/Itest.sh
-        working-directory: app/"${{inputs.service_itest_path}}"
+      - run: "${{inputs.service_itest_path}}"/scripts/Itest.sh
+        working-directory: app
       # getting report
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
         with:
           name: reporting
-          path: app/"${{inputs.service_itest_path}}"/reporting
+          path: app/reporting
