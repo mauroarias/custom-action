@@ -1,0 +1,20 @@
+name: Service quality CI
+on: [push]
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: app
+      - run: ls -als
+      - run: ls -als app/
+      # - run: docker build -t projectpoc:test .
+      #   working-directory: app/ProjectPoc
+      # - run: scripts/Itest.sh
+      #   working-directory: app/IntegrationTest
+      # - name: Publishing Test Report & logs
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: reporting
+      #     path: app/IntegrationTest/reporting

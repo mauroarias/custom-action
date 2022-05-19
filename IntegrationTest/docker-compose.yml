@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  mock: # please dont change name
+    image: sheyenrath/wiremock.net
+    ports:
+      - "9091:80" # please dont change ports
+    networks:
+      - testvln
+
+  projectPoc:
+    image: projectpoc:test
+    depends_on:
+      - postgres
+    ports:
+      - "6666:80"
+      - "6667:443"
+    environment:
+      Genesis__Host: http://mock
+      Genesis__Port: 80
+      ConnectionStrings__DefaultConnection: "Server=postgres;Port=5432;Database=${POSTGRES_DB};User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    networks:
+      - testvln
+
+  itestinit:
+    image: itestinit:test
+    depends_on:
+      - projectPoc
+      - mock
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - testvln
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - testvln
+      
+networks:
+  testvln:
+    driver: bridge
