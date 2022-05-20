@@ -22,7 +22,7 @@ jobs:
       - name: getting itest framework libs
         run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
       - name: building service
-        run: docker build -t ${{ inputs.service_name }}:test .
+        run: docker build -t $(echo ${{ inputs.service_name }} | awk '{print tolower($0)}'):test .
         working-directory: app/${{ inputs.dockerfile_path }}
       - name: copy itest scripts
         run: cp -rf /share-libs/* app/${{ inputs.itest_path }}/
