@@ -23,14 +23,12 @@ jobs:
         run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
       - name: building service
         run: docker build -t ${{ inputs.service_name }}:test .
-        with:
-          path: app/${{ inputs.dockerfile_path }}
+        working-directory: app/${{ inputs.dockerfile_path }}
       - name: copy itest scripts
         run: cp -rf /share-libs/* app/${{ inputs.itest_path }}/
       - name: run Itest
         run: scripts/Itest.sh
-        with:
-          path: app/${{ inputs.itest_path }}
+        working-directory: app/${{ inputs.itest_path }}
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
         with:
