@@ -5,13 +5,11 @@ on:
       service_name:
         required: true
         type: string
-      service_dockerfile_path:
+      dockerfile_path:
         required: true
         type: string
-      service_itest_path: 
+      itest_path: 
         required: true
-        type: string
-      service_version: 
         type: string
 jobs:
   build-docker:
@@ -19,18 +17,22 @@ jobs:
     steps:
       - name: getting source code
         uses: actions/checkout@v3
+        with:
+          path: app
       - name: getting itest framework libs
         run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-libs/ /scripts/
-      - name: building app
-        run: docker build -f "${{inputs.service_dockerfile_path}}" -t "${{inputs.service_name}}":test .
-      - name: prepare itest framework libs copy scripts
-        run: cp -rf share-libs/scripts/* "${{inputs.service_itest_path}}"/scripts/
-      - name: prepare itest framework libs copy dockerfiles
-        run: cp -rf share-libs/* "${{inputs.service_itest_path}}"/
+      - name: building service
+        run: docker build -t ${{ inputs.service_name }}:test .
+        with:
+          path: app/${{ inputs.dockerfile_path }}
+      - name: copy itest scripts
+        run: cp -rf /share-libs/* app/${{ inputs.itest_path }}/
       - name: run Itest
-        run: "${{inputs.service_itest_path}}"/scripts/Itest.sh
+        run: scripts/Itest.sh
+        with:
+          path: app/${{ inputs.itest_path }}
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
         with:
           name: reporting
-          path: reporting
+          path: app/${{ inputs.itest_path }}/reporting
