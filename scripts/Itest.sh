@@ -1,6 +1,6 @@
 #! /bin/bash
 
-source scripts/CommonLib.sh
+source share-qa-libs/scripts/CommonLib.sh
 
 # Building docker test images
 printTitleWithColor "building docker images" "${yellow}"
@@ -15,7 +15,7 @@ printTitleWithColor "Starting infra" "${yellow}"
 docker-compose up -d || exitOnError "error starting infra"
 
 # wait
-sleep 10
+sleep 5
 
 # run tests
 path=$(pwd)

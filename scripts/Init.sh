@@ -3,7 +3,7 @@
 source scripts/CommonLib.sh
 
 # wait
-sleep 5
+sleep 2
 
 # Loading db schema
 loadPostgresSchema

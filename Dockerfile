@@ -1,6 +1,6 @@
 FROM alpine
-COPY "scripts/*" "/share-libs/scripts/"
-COPY "DockerfileI*" "/share-libs/"
-COPY ".dockerignore" "/share-libs/"
-WORKDIR "/share-libs/"
+COPY "scripts/*" "/share-qa-libs/scripts/"
+COPY "DockerfileI*" "/share-qa-libs/"
+COPY ".dockerignore" "/share-qa-libs/"
+WORKDIR "/share-qa-libs/"
 CMD [""]
