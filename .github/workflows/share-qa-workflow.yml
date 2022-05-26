@@ -11,6 +11,10 @@ on:
       itest_path: 
         required: true
         type: string
+      migration_path: 
+        type: string
+      buid_arg: 
+        type: string
 jobs:
   build-docker:
     runs-on: ubuntu-latest    
@@ -20,14 +24,14 @@ jobs:
         with:
           path: app
       - name: getting itest framework libs
-        run: docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -r /share-qa-libs/ /scripts/
+        run: docker run --rm --platform linux/arm64 -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -rf /share-qa-libs/ /scripts/
         working-directory: app/${{ inputs.itest_path }}
       - name: building service
-        run: docker build -t $(echo ${{ inputs.service_name }} | awk '{print tolower($0)}'):test .
+        run: docker build ${{ inputs.buid_arg }} -t $(echo ${{ inputs.service_name }} | awk '{print tolower($0)}'):test .
         working-directory: app/${{ inputs.dockerfile_path }}
       - name: run Itest
-        run: share-qa-libs/scripts/Itest.sh
-        working-directory: app/${{ inputs.itest_path }}
+        run: ${{ inputs.itest_path }}/share-qa-libs/scripts/Itest.sh "${{ inputs.itest_path }}" "${{ inputs.migration_path }}"
+        working-directory: app
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
         with:
