@@ -1,13 +1,20 @@
 #! /bin/bash
 
-source share-qa-libs/scripts/CommonLib.sh
+integrationTestPath=$1
+migrationPath=$2
+
+source $integrationTestPath/share-qa-libs/scripts/CommonLib.sh
+
+echo $integrationTestPath
+echo $migrationPath
 
 # Building docker test images
 printTitleWithColor "building docker images" "${yellow}"
 printMessage "Building docker init image"
-dockerBuild DockerfileInit "itestinit:test"
+dockerBuild ${integrationTestPath}share-qa-libs/DockerfileInit "itestinit:test" "--build-arg MIGRATION_PATH=$migrationPath --build-arg INTEGRATION_TEST_PATH=$integrationTestPath"
+cd $integrationTestPath
 printMessage "Building docker integration test image"
-dockerBuild DockerfileItest "itest:test"
+dockerBuild share-qa-libs/DockerfileItest "itest:test"
 
 # Starting infra
 docker-compose down
@@ -19,13 +26,13 @@ sleep 5
 
 # run tests
 path=$(pwd)
-mkdir $path/reporting
+mkdir ${path}/reporting
 printTitleWithColor "Running Itests" "${yellow}"
 getNetworkNameFromDockerCompose
-docker run -i --network=$networkName -v $path/reporting:/reporting itest:test || printAlert "some tests fail, please check reporting"
+docker run -i --network=$networkName -v ${path}/reporting:/reporting itest:test || printAlert "some tests fail, please check reporting"
 
 # reporting logs
-docker-compose logs -t > $path/reporting/logs.log
+docker-compose logs -t > ${path}reporting/logs.log
  
 # Stopping infra
 printTitleWithColor "Stopping infra" "${yellow}"

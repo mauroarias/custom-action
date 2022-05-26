@@ -2,6 +2,8 @@
 
 ## CONFIGURATE TO USE
 
+### docker-compose
+
 ### variables
 
 ### Database
@@ -12,40 +14,55 @@ xxx.
 
 ## ADD INTO A PROJECT
 
+### copy & create files
+
+- Copy docker-compose.template file to your local **Itest folder** and edit it.
+
 ### github actions workflow
 
 ## RUN LOCALLY
 
-### Load the share qa lib on your Itest project
+Probably some commands does not work on Windows OS.
 
-On your local **Itest folder**, run the following comand:
-  docker run --rm -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -rf /share-qa-libs/ /scripts/
+### Prepare to run with Rider or Visual Studio IDE
 
-### Compile your configure project locally
+#### 1. Load the shared qalib on your Itest project
+
+On your local **Itest folder**, run the following command:
+  docker run --rm --platform linux/arm64 -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -rf /share-qa-libs/ /scripts/
+
+#### 2. Compile app service
+
+On your local **Service root folder or on your dockerfile workpath**, run the following command:
+  docker build -f < Dockerfile's path >/Dockerfile --platform linux/arm64 --no-cache -t app:test .
+
+#### 3. Compile your configure project locally
+
+On your local **service root folder**, run the following comand to build the initItest image:
+  docker build -f < integration test path >/share-qa-libs/DockerfileInit --build-arg MIGRATION_PATH=< migration's project path, OPTIONAL if applies, ending in / > --build-arg INTEGRATION_TEST_PATH=< integration test path >/ --no-cache --platform linux/arm64 -t itestinit:test .
+
+ex:
+Root_serviceProject:
+    | ProjectSrc
+    | IntegrationTest
+
+On **Root_serviceProject** run:
+
+docker build -f **IntegrationTest**/share-qa-libs/DockerfileInit --build-arg MIGRATION_PATH=**ProjectSrc/** --build-arg INTEGRATION_TEST_PATH=**IntegrationTest/** --no-cache --platform linux/arm64 -t itestinit:test .
+
+#### 4. Start your infra locally
 
 On your local **Itest folder**:
 
-- Load the share qa libs. Please refer to: **Load the share qa lib on your Itest project** section
-- Run the following comand to build the initItest image:
-  docker build -f share-qa-libs/DockerfileInit -t itestinit:test . --no-cache
-
-### Start your infra locally
-
-On your local **Itest folder**:
-
-- Compile your configure project. Please refer to: **Compile your configure project locally** section.
-- Build your service using the proper name and tag. The same used in the docker-compose file.
-- Make sure you have configured your system properlly. **Please refer to configurate section for more information**.
-- Make sure you have set all environment vars configurate on your system. **Please check the docker-compose file & Configuration.sh file**.
+- Make sure you have configured and set all environment vars configurate on your system.
 - make:
     docker-compose up
 
-### Run Itest from your IDE (Rider or Visual studio)
+#### 5. Run Itest from your IDE (Rider or Visual studio)
 
-- Start the infra. Please refer to: **Start your infra locally** section.
-- go to you IDE and run your tests as ussually. **Please note that you probably must use the proper port and localhost as host**.
+Go to you IDE and run your tests as ussually. **Please note that you probably must use the proper port and localhost as host**.
 
-### Run Itest from docker container
+### Build & Run Itest from docker container
 
 Please note that for now this option is available only on MacOS or Linux OS.
 On your local **Itest folder**:

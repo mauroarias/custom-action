@@ -13,9 +13,9 @@ white=`tput setaf 7`
 gris=`tput setaf 8`
 reset=`tput sgr0`
 
-if [ -f "scripts/Configuration.sh" ];
+if [ -f "$integrationTestPath/scripts/Configuration.sh" ];
 then
-  source scripts/Configuration.sh
+  source $integrationTestPath/scripts/Configuration.sh
 fi
 
 #-------------------------------------------
@@ -95,12 +95,13 @@ getNetworkNameFromDockerCompose () {
 dockerBuild () {
   file=$1
   tag=$2
-  docker build -f $file -t $tag .
+  arg=$3
+  docker build $arg -f $file -t $tag .
 }
 
 initMockStubs () {
   mockUri=$1
-  if [ -f "scripts/Wiremock.json" ];
+  if [ -f "$integrationTestPath/scripts/Wiremock.json" ];
   then
     # watting for mock up
     waitServerUp "$mockUri/__admin/mappings" "mock" "20"
@@ -116,12 +117,23 @@ initMockStubs () {
   fi
 }
 
+applyMigration () {
+  if [ -f "$integrationTestPath/migration/dbMigration" ];
+  then
+    connection=$1 
+    echo "{\"ConnectionStrings\": {\"DefaultConnection\": \"$connection\"}}" > "$integrationTestPath/appsettings.json"
+    # loading db migration
+    printTitleWithColor "loading db migration" "${yellow}"
+    $integrationTestPath/migration/dbMigration
+  fi
+}
+
 loadPostgresSchema () {
-  if [ -f "scripts/Schema.sql" ];
+  if [ -f "$integrationTestPath/scripts/Schema.sql" ];
   then
     # loading db schema
     printTitleWithColor "loading db schema" "${yellow}"
     export PGPASSWORD=$POSTGRES_PASSWORD
-    psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -f scripts/Schema.sql || exitOnError "error loading schema"
+    psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -f $integrationTestPath/scripts/Schema.sql || exitOnError "error loading schema"
   fi
 }
