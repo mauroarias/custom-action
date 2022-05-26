@@ -30,10 +30,10 @@ jobs:
         run: docker build ${{ inputs.buid_arg }} -t $(echo ${{ inputs.service_name }} | awk '{print tolower($0)}'):test .
         working-directory: app/${{ inputs.dockerfile_path }}
       - name: run Itest
-        run: ${{ inputs.itest_path }}/share-qa-libs/scripts/Itest.sh "${{ inputs.itest_path }}" "${{ inputs.migration_path }}"
+        run: ${{ inputs.itest_path }}share-qa-libs/scripts/Itest.sh "${{ inputs.itest_path }}" "${{ inputs.migration_path }}"
         working-directory: app
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
         with:
           name: reporting
-          path: app/${{ inputs.itest_path }}/reporting
+          path: app/${{ inputs.itest_path }}reporting
