@@ -2,13 +2,13 @@
 
 integrationTestPath=./
 
-source scripts/CommonLib.sh
+source ${integrationTestPath}scripts/CommonLib.sh
 
 # wait
 sleep 2
 
 # apply migration
-applyMigration "$CONNECTION"
+applyMigration
 
 # Loading db schema
 loadPostgresSchema

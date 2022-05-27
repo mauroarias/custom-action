@@ -1,0 +1,5 @@
+{
+    "ConnectionStrings": {
+      "ProjectServiceDatabase": "Host=postgres;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+    }
+  }

@@ -1,0 +1,38 @@
+{
+    "stubs":[
+       {
+          "Request":{
+             "Path":"/v1/core/api/license/308bb20c-abb3-4341-b921-f61a546f7b28",
+             "Methods":[
+                "get"
+             ]
+          },
+          "Response":{
+             "StatusCode":200,
+             "body":"{\"id\": \"308bb20c-abb3-4341-b921-f61a546f7b28\",\"name\": \"name-308bb20c\",\"email\": \"test-308bb20c@test.com\",\"expires_at\": \"2022-05-17T15:00:40.32543Z\"}",
+             "UseTransformer":false,
+             "Headers":{
+                "Content-Type":"application/json"
+             },
+             "Delay":10
+          }
+       },
+       {
+          "Request":{
+             "Path":"/v1/core/api/license/308bb20c-abb3-4341-b921-f61a546f7b29",
+             "Methods":[
+                "get"
+             ]
+          },
+          "Response":{
+             "StatusCode":404,
+             "body":"{\"message\": \"The given key '308bb20c-abb3-4341-b921-f61a546f7b29' was not present in the dictionary.\"}",
+             "UseTransformer":false,
+             "Headers":{
+                "Content-Type":"application/json"
+             },
+             "Delay":10
+          }
+       }
+    ]
+ }

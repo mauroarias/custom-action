@@ -3,10 +3,7 @@
 integrationTestPath=$1
 migrationPath=$2
 
-source $integrationTestPath/share-qa-libs/scripts/CommonLib.sh
-
-echo $integrationTestPath
-echo $migrationPath
+source ${integrationTestPath}share-qa-libs/scripts/CommonLib.sh
 
 # Building docker test images
 printTitleWithColor "building docker images" "${yellow}"
