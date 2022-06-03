@@ -2,9 +2,6 @@ name: QA platform CI
 on:
   workflow_call:
     inputs:
-      service_name:
-        required: true
-        type: string
       dockerfile_path:
         required: true
         type: string
@@ -14,6 +11,8 @@ on:
       migration_path: 
         type: string
       buid_arg: 
+        type: string
+      test_arg: 
         type: string
 jobs:
   build-docker:
@@ -27,10 +26,10 @@ jobs:
         run: docker run --rm --platform linux/arm64 -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -rf /share-qa-libs/ /scripts/
         working-directory: app/${{ inputs.itest_path }}
       - name: building service
-        run: docker build ${{ inputs.buid_arg }} -t $(echo ${{ inputs.service_name }} | awk '{print tolower($0)}'):test .
-        working-directory: app/${{ inputs.dockerfile_path }}
+        run: docker build -f ${{ inputs.dockerfile_path }} --platform linux/arm64 --no-cache ${{ inputs.buid_arg }} -t app:test .
+        working-directory: app
       - name: run Itest
-        run: ${{ inputs.itest_path }}share-qa-libs/scripts/Itest.sh "${{ inputs.itest_path }}" "${{ inputs.migration_path }}"
+        run: ${{ inputs.itest_path }}share-qa-libs/scripts/Itest.sh "${{ inputs.itest_path }}" "${{ inputs.migration_path }}" "${{ inputs.test_arg }}"
         working-directory: app
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
