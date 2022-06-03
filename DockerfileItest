@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0
 ARG INTEGRATION_TEST_PATH
 ARG TEST_ARG
-RUN apt-get update
+RUN apt-get update --security-opt seccomp=unconfined
 RUN apt-get install -y gettext-base
 WORKDIR /src
 COPY . .
