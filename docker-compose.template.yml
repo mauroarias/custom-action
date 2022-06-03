@@ -6,7 +6,7 @@ services:
   # *****************************************************
   # mock: # please dont change name
   #   image: sheyenrath/wiremock.net
-  #   platform: linux/arm64
+  #   platform: linux/amd64
   #   ports:
   #     - "9091:80" # please dont change ports
   #   networks:
@@ -25,7 +25,7 @@ services:
       # *****************************************************
       # - "6666:80"
       # - "6667:443"
-    platform: linux/arm64
+    platform: linux/amd64
     environment:
       # *****************************************************
       #   Configure here all env vars you need to set
@@ -44,7 +44,7 @@ services:
       #             addservices dependences here
       # *****************************************************
       # - mock
-    platform: linux/arm64
+    platform: linux/amd64
     environment:
       # *****************************************************
       #   Configure here all env vars you need to set
@@ -61,7 +61,7 @@ services:
   # postgres:
   #   image: postgres
   #   restart: always
-  #   platform: linux/arm64
+  #   platform: linux/amd64
   #   environment:
   #     POSTGRES_DB: ${POSTGRES_DB}
   #     POSTGRES_USER: ${POSTGRES_USER}
