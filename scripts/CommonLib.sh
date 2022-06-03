@@ -112,7 +112,7 @@ initMockStubs () {
   if [ -f "${integrationTestPath}scripts/Wiremock.json" ];
   then
     # watting for mock up
-    waitServerUp "$mockUri/__admin/mappings" "mock" "20"
+    waitServerUp "$mockUri/__admin/mappings" "mock" "30"
     # preparing stubs
     printTitleWithColor "cleaning all stubs" "${yellow}"
     curl --silent --fail -X DELETE "$mockUri/__admin/mappings" || exitOnError "error resetting stubs"

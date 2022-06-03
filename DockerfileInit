@@ -9,13 +9,13 @@ ENV PATH $PATH:/root/.dotnet/tools
 WORKDIR "/src"
 RUN ./Migration.sh ${MIGRATION_PATH} ${INTEGRATION_TEST_PATH}
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as initrunner
+FROM ubuntu as initrunner
 ARG INTEGRATION_TEST_PATH
 RUN apt-get update
-RUN apt-get install -y postgresql-client jq gettext-base
+RUN apt-get install -y postgresql-client jq curl
 RUN apt-get clean
 COPY ${INTEGRATION_TEST_PATH}scripts/* /scripts/
 COPY ${INTEGRATION_TEST_PATH}share-qa-libs/scripts/* /scripts/
-COPY --from=migration /src/dbMigration* /migration/
+COPY --from=migration /src/Schema.sql /scripts/
 WORKDIR "/"
 CMD ["/scripts/Init.sh"]

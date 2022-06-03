@@ -62,7 +62,7 @@ On your local **Itest folder**:
 
 Go to you IDE and run your tests as ussually. **Please note that you probably must use the proper port and localhost as host**.
 
-### Build & Run Itest from docker container
+### Build &Run Itest from docker container
 
 Please note that for now this option is available only on MacOS or Linux OS.
 On your local **Itest folder**:

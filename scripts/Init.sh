@@ -5,7 +5,7 @@ integrationTestPath=./
 source ${integrationTestPath}scripts/CommonLib.sh
 
 # wait
-sleep 2
+sleep 3
 
 # apply migration
 applyMigration
