@@ -23,10 +23,10 @@ jobs:
         with:
           path: app
       - name: getting itest framework libs
-        run: docker run --rm --platform linux/arm64 -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -rf /share-qa-libs/ /scripts/
+        run: docker run --rm --platform linux -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -rf /share-qa-libs/ /scripts/
         working-directory: app/${{ inputs.itest_path }}
       - name: building service
-        run: docker build -f ${{ inputs.dockerfile_path }} --platform linux/arm64 --no-cache ${{ inputs.buid_arg }} -t app:test .
+        run: docker build -f ${{ inputs.dockerfile_path }} --platform linux --no-cache ${{ inputs.buid_arg }} -t app:test .
         working-directory: app
       - name: run Itest
         run: ${{ inputs.itest_path }}share-qa-libs/scripts/Itest.sh "${{ inputs.itest_path }}" "${{ inputs.migration_path }}" "${{ inputs.test_arg }}"

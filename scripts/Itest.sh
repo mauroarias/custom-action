@@ -28,7 +28,6 @@ mkdir ${path}/reporting
 printTitleWithColor "Running Itests" "${yellow}"
 getNetworkNameFromDockerCompose
 pwd
-echo "docker run -i --network=$networkName --platform linux/amd64 -v ${path}/reporting:/reporting itest:test"
 docker run -i --network=$networkName --platform linux/amd64 -v ${path}/reporting:/reporting itest:test #|| printAlert "some tests fail, please check reporting"
 
 # reporting logs
