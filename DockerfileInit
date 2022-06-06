@@ -1,19 +1,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS migration
 ARG MIGRATION_PATH=""
 ARG INTEGRATION_TEST_PATH
-RUN apt-get update --security-opt seccomp=unconfined
-RUN apt-get install -y gettext-base
+RUN apt-get update && apt-get install -y gettext-base
 COPY . /src
 COPY ${INTEGRATION_TEST_PATH}share-qa-libs/scripts/Migration.sh "/src"
 ENV PATH $PATH:/root/.dotnet/tools
 WORKDIR "/src"
 RUN ./Migration.sh ${MIGRATION_PATH} ${INTEGRATION_TEST_PATH}
 
-FROM ubuntu as initrunner
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as initrunner
 ARG INTEGRATION_TEST_PATH
-RUN apt-get update --security-opt seccomp=unconfined
-RUN apt-get install -y postgresql-client jq curl
-RUN apt-get clean
+RUN apt-get update && apt-get install -y postgresql-client jq curl gettext-base && rm -rf /var/lib/apt/lists/*
 COPY ${INTEGRATION_TEST_PATH}scripts/* /scripts/
 COPY ${INTEGRATION_TEST_PATH}share-qa-libs/scripts/* /scripts/
 COPY --from=migration /src/Schema.sql /scripts/
