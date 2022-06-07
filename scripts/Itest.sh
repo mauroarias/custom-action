@@ -21,14 +21,14 @@ buildStartWaitInfra
 
 # Building test docker image
 printTitleWithColor "building test docker image" "${yellow}"
-dockerBuild "${integrationTestPath}share-qa-libs/DockerfileItest" "itest:test" "--build-arg INTEGRATION_TEST_PATH=$integrationTestPath --build-arg TEST_ARG=$TEST_BUILD_ARG --no-cache --platform $DOCKER_ARCH" || exitOnError "error generating docker test image"
+dockerBuild "${integrationTestPath}share-qa-libs/DockerfileItest" "itest:test" "--build-arg INTEGRATION_TEST_PATH=$integrationTestPath --build-arg TEST_ARG=$TEST_BUILD_ARG --no-cache --platform $dockerArch" || exitOnError "error generating docker test image"
 
 # run tests
 path=$(pwd)
 mkdir "${path}"/reporting
 printTitleWithColor "Running Itests" "${yellow}"
 getNetworkNameFromDockerCompose
-docker run -i --network="$networkName" --platform "$DOCKER_ARCH" -v "${path}"/reporting:/reporting itest:test #|| printAlert "some tests fail, please check reporting"
+docker run -i --network="$networkName" --platform "$dockerArch" -v "${path}"/reporting:/reporting itest:test #|| printAlert "some tests fail, please check reporting"
 
 # reporting logs
 docker-compose -f "${integrationTestPath}docker-compose.yml" logs -t > "${path}"/reporting/logs.log

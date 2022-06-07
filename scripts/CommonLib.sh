@@ -202,7 +202,7 @@ parsingDockerArch () {
 buildStartWaitInfra () {
   # Building init docker image
   printTitleWithColor "building init docker image" "${yellow}"
-  dockerBuild "${integrationTestPath}share-qa-libs/DockerfileInit" "itest-init:test" "--build-arg MIGRATION_LIST=$migrationList --build-arg INTEGRATION_TEST_PATH=$integrationTestPath --no-cache --platform $DOCKER_ARCH" || exitOnError "error generating docker init image"
+  dockerBuild "${integrationTestPath}share-qa-libs/DockerfileInit" "itest-init:test" "--build-arg MIGRATION_LIST=$migrationList --build-arg INTEGRATION_TEST_PATH=$integrationTestPath --no-cache --platform $dockerArch" || exitOnError "error generating docker init image"
   
   # Starting infra
   docker-compose -f "${integrationTestPath}docker-compose.yml" kill
