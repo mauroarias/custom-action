@@ -24,8 +24,8 @@ printTitleWithColor "building test docker image" "${yellow}"
 dockerBuild "${integrationTestPath}share-qa-libs/DockerfileItest" "itest:test" "--build-arg INTEGRATION_TEST_PATH=$integrationTestPath --build-arg TEST_ARG=$TEST_BUILD_ARG --no-cache --platform $dockerArch" || exitOnError "error generating docker test image"
 
 # run tests
-reportingPath="$(pwd)${integrationTestPath}/reporting"
-printTitleWithColor "reporting in path $reportingPath" "${yellow}" 
+reportingPath="$(pwd)/${integrationTestPath}reporting"
+printMessageWithColor "reporting in path $reportingPath" "${yellow}" 
 mkdir "${reportingPath}"
 printTitleWithColor "Running Itests" "${yellow}"
 getNetworkNameFromDockerCompose
