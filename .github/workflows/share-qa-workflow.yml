@@ -8,15 +8,13 @@ on:
       itest_path: 
         required: true
         type: string
-      migration_path: 
-        type: string
-      buid_arg: 
-        type: string
-      test_arg: 
-        type: string
+
 jobs:
   build-docker:
-    runs-on: ubuntu-latest    
+    runs-on:
+      - self-hosted
+      - Linux
+      - x64
     steps:
       - name: getting source code
         uses: actions/checkout@v3
@@ -25,11 +23,14 @@ jobs:
       - name: getting itest framework libs
         run: docker run --rm --platform linux/amd64 -v $(pwd):/scripts mauroarias/share-qa-lib:latest /bin/cp -rf /share-qa-libs/ /scripts/
         working-directory: app/${{ inputs.itest_path }}
-      - name: building service
-        run: docker build -f ${{ inputs.dockerfile_path }} --platform linux/amd64 --no-cache ${{ inputs.buid_arg }} -t app:test .
-        working-directory: app
-      - name: run Itest
-        run: ${{ inputs.itest_path }}share-qa-libs/scripts/Itest.sh "${{ inputs.itest_path }}" "${{ inputs.migration_path }}" "${{ inputs.test_arg }}"
+      - name: Install docker-compose
+        run: |
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          mkdir -p "$HOME/.local/bin"
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o $HOME/.local/bin/docker-compose
+          chmod +x $HOME/.local/bin/docker-compose
+      - name: build service and run Itest
+        run: ${{ inputs.itest_path }}share-qa-libs/scripts/Itest.sh -b "${{ inputs.dockerfile_path }}" -a "linux/amd64"
         working-directory: app
       - name: Publishing Test Report & logs
         uses: actions/upload-artifact@v2
