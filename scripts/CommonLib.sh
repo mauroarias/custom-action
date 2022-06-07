@@ -179,7 +179,7 @@ buildApp () {
   if [ ! -z "$buildDockerFile" ]
   then
     printTitleWithColor "building app" "${yellow}"
-    docker build -f "$buildDockerFile" --platform "$dockerArch" --platform linux/arm64 --no-cache -t app:test .
+    docker build -f "$buildDockerFile" --platform "$dockerArch" --no-cache -t app:test .
   fi
 }
 
@@ -196,7 +196,7 @@ parsingDockerArch () {
   then
     dockerArch="$DOCKER_ARCH"
   fi
-  printMessageWithColor "===> docker arch: $migrationList" "${yellow}"
+  printMessageWithColor "===> docker arch: $dockerArch" "${yellow}"
 }
 
 buildStartWaitInfra () {
