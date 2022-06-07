@@ -1,12 +1,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS migration
-ARG MIGRATION_PATH=""
+ARG MIGRATION_LIST=""
 ARG INTEGRATION_TEST_PATH
 RUN apt-get update && apt-get install -y gettext-base
 COPY . /src
 COPY ${INTEGRATION_TEST_PATH}share-qa-libs/scripts/Migration.sh "/src"
 ENV PATH $PATH:/root/.dotnet/tools
 WORKDIR "/src"
-RUN ./Migration.sh ${MIGRATION_PATH} ${INTEGRATION_TEST_PATH}
+RUN ./Migration.sh ${MIGRATION_LIST} ${INTEGRATION_TEST_PATH}
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 as initrunner
 ARG INTEGRATION_TEST_PATH

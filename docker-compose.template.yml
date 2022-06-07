@@ -36,8 +36,8 @@ services:
     networks:
       - testvln
 
-  itestinit:
-    image: itestinit:test
+  itest-init:
+    image: itest-init:test
     depends_on:
       - app
       # *****************************************************

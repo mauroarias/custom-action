@@ -1,38 +1,38 @@
 #! /bin/bash
 
-integrationTestPath=$1
-migrationPath=$2
-testArg=$3
+file="${BASH_SOURCE[0]:-$0}";
+dir="$( cd -P "$( dirname -- "$file"; )" &> /dev/null && pwd 2> /dev/null; )";
+integrationTestPath=`dirname -- "$0"`
+integrationTestPath=$(dirname $(dirname $integrationTestPath))/
 
-source ${integrationTestPath}share-qa-libs/scripts/CommonLib.sh
+source "$dir/CommonLib.sh"
 
-# Building docker test images
-printTitleWithColor "building docker images" "${yellow}"
-printMessage "Building docker init image"
-dockerBuild ${integrationTestPath}share-qa-libs/DockerfileInit "itestinit:test" "--build-arg MIGRATION_PATH=$migrationPath --build-arg INTEGRATION_TEST_PATH=$integrationTestPath --no-cache --platform linux/amd64" || exitOnError "error generating docker init image"
-printMessage "Building docker integration test image"
-dockerBuild ${integrationTestPath}share-qa-libs/DockerfileItest "itest:test" "--build-arg INTEGRATION_TEST_PATH=$integrationTestPath --build-arg TEST_ARG=$testArg --no-cache --platform linux/amd64" || exitOnError "error generating docker test image"
+# parsing docker Architecture if it's present
+parsingDockerArch
 
-# Starting infra
-docker-compose down
-printTitleWithColor "Starting infra" "${yellow}"
-cd ${integrationTestPath}
-docker-compose up -d || exitOnError "error starting infra"
+# build app if it's requested
+buildApp
 
-# wait
-sleep 10
+# migrations
+getMigrationList
+
+# build start and wait infra
+buildStartWaitInfra
+
+# Building test docker image
+printTitleWithColor "building test docker image" "${yellow}"
+dockerBuild "${integrationTestPath}share-qa-libs/DockerfileItest" "itest:test" "--build-arg INTEGRATION_TEST_PATH=$integrationTestPath --build-arg TEST_ARG=$TEST_BUILD_ARG --no-cache --platform $DOCKER_ARCH" || exitOnError "error generating docker test image"
 
 # run tests
 path=$(pwd)
-mkdir ${path}/reporting
+mkdir "${path}"/reporting
 printTitleWithColor "Running Itests" "${yellow}"
 getNetworkNameFromDockerCompose
-pwd
-docker run -i --network=$networkName --platform linux/amd64 -v ${path}/reporting:/reporting itest:test #|| printAlert "some tests fail, please check reporting"
+docker run -i --network="$networkName" --platform "$DOCKER_ARCH" -v "${path}"/reporting:/reporting itest:test #|| printAlert "some tests fail, please check reporting"
 
 # reporting logs
-docker-compose logs -t > ${path}/reporting/logs.log
+docker-compose -f "${integrationTestPath}docker-compose.yml" logs -t > "${path}"/reporting/logs.log
  
 # Stopping infra
 printTitleWithColor "Stopping infra" "${yellow}"
-docker-compose down || exitOnError "error stopping infra"
+docker-compose -f "${integrationTestPath}docker-compose.yml" down || exitOnError "error stopping infra"

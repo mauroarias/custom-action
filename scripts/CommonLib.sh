@@ -19,6 +19,30 @@ then
 fi
 
 #-------------------------------------------
+# Common
+#-------------------------------------------
+
+# Parsing arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -b|--build)
+      shift
+      buildDockerFile=$1
+      shift
+      ;;
+    -a|--arch)
+      shift
+      dockerArch=$1
+      shift
+      ;;
+    -*|--*|*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+  esac
+done
+
+#-------------------------------------------
 # Common vars
 #-------------------------------------------
 
@@ -97,7 +121,7 @@ waitServerUp () {
 }
 
 getNetworkNameFromDockerCompose () {
-  networkName=$(docker inspect $(docker-compose ps -q | head -n 1) | jq -r '.[0].NetworkSettings.Networks | keys | .[]')
+  networkName=$(docker inspect $(docker-compose -f "${integrationTestPath}docker-compose.yml" ps -q | head -n 1) | jq -r '.[0].NetworkSettings.Networks | keys | .[]')
 }
 
 dockerBuild () {
@@ -149,4 +173,43 @@ loadPostgresSchema () {
     export PGPASSWORD=$POSTGRES_PASSWORD
     psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -f ${integrationTestPath}scripts/Schema.sql || exitOnError "error loading schema"
   fi
+}
+
+buildApp () {
+  if [ ! -z "$buildDockerFile" ]
+  then
+    printTitleWithColor "building app" "${yellow}"
+    docker build -f "$buildDockerFile" --platform "$dockerArch" --platform linux/arm64 --no-cache -t app:test .
+  fi
+}
+
+getMigrationList () {
+  migrationList=""
+  for migration in "${MIGRATIONS[@]}"; do
+    migrationList="$migration|$migrationList"
+  done
+  printMessageWithColor "===> migration list: $migrationList" "${yellow}"
+}
+
+parsingDockerArch () {
+  if [ -z "$dockerArch" ]
+  then
+    dockerArch="$DOCKER_ARCH"
+  fi
+  printMessageWithColor "===> docker arch: $migrationList" "${yellow}"
+}
+
+buildStartWaitInfra () {
+  # Building init docker image
+  printTitleWithColor "building init docker image" "${yellow}"
+  dockerBuild "${integrationTestPath}share-qa-libs/DockerfileInit" "itest-init:test" "--build-arg MIGRATION_LIST=$migrationList --build-arg INTEGRATION_TEST_PATH=$integrationTestPath --no-cache --platform $DOCKER_ARCH" || exitOnError "error generating docker init image"
+  
+  # Starting infra
+  docker-compose -f "${integrationTestPath}docker-compose.yml" kill
+  printTitleWithColor "Starting infra" "${yellow}"
+  docker-compose -f "${integrationTestPath}docker-compose.yml" up -d || exitOnError "error starting infra"
+  
+  # wait
+  printMessageWithColor "waiting for infra" "${yellow}"
+  sleep $waitStartTimeSec
 }

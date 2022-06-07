@@ -34,12 +34,12 @@ On your local **Itest folder**, run the following command:
 #### 2. Compile app service
 
 On your local **Service root folder or on your dockerfile workpath**, run the following command:
-  docker build -f <-Dockerfile's path->/Dockerfile --platform linux/amd64 --no-cache -t app:test .
+  docker build -f <-Dockerfile's path->/Dockerfile --platform linux/amd64 --no-cache <-other build arguments, ex: --build-arg JFROG_ARTIFACTORY_USER=**** --build-arg ARTIFACTORY_PASSWORD=****-> -t app:test .
 
 #### 3. Compile your testing config project locally
 
 On your local **service root folder**, run the following comand to build the initItest image:
-  docker build -f <-integration test path->/share-qa-libs/DockerfileInit --build-arg MIGRATION_PATH=<-migration's project path, OPTIONAL if applies, ending in /-> --build-arg INTEGRATION_TEST_PATH=<-integration test path->/ --no-cache --platform linux/amd64 -t itestinit:test .
+  docker build -f <-integration test path->/share-qa-libs/DockerfileInit --build-arg MIGRATION_PATH=<-migration's project path, OPTIONAL if applies, ending in /-> --build-arg INTEGRATION_TEST_PATH=<-integration test path->/ --no-cache --platform linux/amd64 -t itest-init:test .
 
 ex:
 Root_serviceProject:
@@ -48,7 +48,7 @@ Root_serviceProject:
 
 On **Root_serviceProject** run:
 
-docker build -f **IntegrationTest**/share-qa-libs/DockerfileInit --build-arg MIGRATION_PATH=**ProjectSrc/** --build-arg INTEGRATION_TEST_PATH=**IntegrationTest/** --no-cache --platform linux/amd64 -t itestinit:test .
+docker build -f **IntegrationTest**/share-qa-libs/DockerfileInit --build-arg MIGRATION_PATH=**ProjectSrc/** --build-arg INTEGRATION_TEST_PATH=**IntegrationTest/** --no-cache --platform linux/amd64 -t itest-init:test .
 
 #### 4. Start your infra locally
 
@@ -67,7 +67,7 @@ Go to you IDE and run your tests as ussually. **Please note that you probably mu
 Please note that for now this option is available only on MacOS or Linux OS.
 On your local **service root folder**:
 
-- Compile your services, following:
+- Compile your service, following:
   docker build -f <-Dockerfile's path->/Dockerfile --platform linux/amd64 --no-cache -t app:test .
 - Run Itest script comand:
   share-qa-libs/scripts/Itest.sh <-integration test path->/ <-migration's project path, OPTIONAL if applies, ending in /-> <-Test arguments if you have->
